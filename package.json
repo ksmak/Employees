@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "migrate": "ts-node app/api/migrations.ts"
+  },
+  "dependencies": {
+    "next": "^16.4.5",
+    "postcss": "^8.5.32",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.4",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "tailwindcss": "^4.3.4",
+    "typescript": "7.0.2"
+  }
+}
