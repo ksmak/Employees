@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "@/app/api/database";
+import { apiGetAll, apiPost } from "@/app/api/database";
 
 export async function POST(req: Request, res: Response) {
     const body = await req.json();
@@ -50,7 +50,7 @@ export async function GET(req: Request, res: Response) {
     }
 
     let status, respBody;
-    await apiGet(query)
+    await apiGetAll(query)
         .then((data) => {
             status = 200;
             respBody = data;

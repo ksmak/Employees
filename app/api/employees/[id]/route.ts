@@ -1,14 +1,15 @@
 import type { NextRequest } from 'next/server'
-import { apiGet } from "@/app/api/database";
+import { apiGetFirst } from "@/app/api/database";
+import { EmployeeType } from '@/app/lib/types';
 
 export async function GET(_req: NextRequest, ctx: RouteContext<'/api/employees/[id]'>) {
     const { id } = await ctx.params
     const query = `
-        SELECT * from employees WHERE id = ${parseInt(id, 10)}
+        SELECT * from employees WHERE id = ?
    `;
     let status, body;
     try {
-        await apiGet(query)
+        await apiGetFirst<EmployeeType>(query, [id])
             .then((res) => {
                 status = 200;
                 body = res;

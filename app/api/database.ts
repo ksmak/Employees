@@ -13,7 +13,7 @@ export const db = new sqlite3.Database(
     }
 );
 
-export const apiGet = async (query: string) => {
+export const apiGetAll = async (query: string) => {
     return await new Promise((resolve, reject) => {
         db.all(query, (err: Error, row) => {
             if (err) {
@@ -25,9 +25,25 @@ export const apiGet = async (query: string) => {
     });
 };
 
-export const apiPost = async (query: string, values: string[]) => {
+export const apiGetFirst = <T>(
+    query: string,
+    params: any[]
+): Promise<T | undefined> => {
+    return new Promise((resolve, reject) => {
+        db.get(query, params, (err: Error | null, row: T | undefined) => {
+            if (err) {
+                console.error(err);
+                return reject(err);
+            }
+
+            resolve(row);
+        });
+    });
+};
+
+export const apiPost = async (query: string, params: any[]) => {
     return await new Promise((resolve, reject) => {
-        db.run(query, values, function (err) {
+        db.run(query, params, function (err) {
             if (err) {
                 console.log(err);
                 reject(err);

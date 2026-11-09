@@ -1,5 +1,6 @@
 import { ColumnType } from "@/app/lib/types"
 import EmployeesTable from "@/app/ui/employees_table/employees_table"
+import { getEmployees } from "../lib/actions";
 
 interface EmployeesPageProps {
     searchParams: Promise<{
@@ -10,67 +11,72 @@ interface EmployeesPageProps {
         management?: string;
         position?: string;
         page?: string;
+        sort?: string;
+        sortField: string;
     }>;
 }
 
 export default async function EmployeesPage({ searchParams }: EmployeesPageProps) {
     //getting search params
-    const { surname, name, middlename, department, management, position, page } = await searchParams
+    const { surname, name, middlename, department, management, position, page, sort, sortField } = await searchParams
     const currentPage = Number(page) || 1
+    const data = await getEmployees({
+        surname: surname || '',
+        name: name || '',
+        middlename: middlename || '',
+        department: department || '',
+        management: management || '',
+        position: position || '',
+        page: String(currentPage),
+        sort: sort || '',
+        sortField: sortField || '',
+    })
 
-    //loading dictionaries
-    const departmentsData = await fetch("http://localhost:3000/api/departments")
-    const departments = await departmentsData.json()
-    const managementsData = await fetch("http://localhost:3000/api/managements")
-    const managements = await managementsData.json()
-    const positionsData = await fetch("http://localhost:3000/api/positions")
-    const positions = await positionsData.json()
-
-    //loading employees
-    const data = await fetch(`http://localhost:3000/api/employees?surname=${surname || ''}&name=${name || ''}&middlename=${middlename || ''}&department=${department || ''}&management=${management || ''}&position=${position || ''}&page=${currentPage}`)
-    const json = await data.json()
-    const employees = json.res
-    const totalPages = json.totalPages
-    const totals = json.totals //count of record
+    if (!data.error) {
+        <p>{`Ошибка! ${data.error}`}</p>
+    }
 
     //table columns
     const columns: ColumnType[] = [
         {
             title: 'Фамилия',
-            weight: '16%'
+            weight: '16%',
+            field: 'employees.surname',
         },
         {
             title: 'Имя',
-            weight: '16%'
+            weight: '16%',
+            field: 'employees.name',
         },
         {
             title: 'Отчество',
-            weight: '16%'
+            weight: '16%',
+            field: 'employees.middlename',
         },
         {
             title: 'Управление',
-            weight: '18%'
+            weight: '18%',
+            field: 'department_name',
         },
         {
             title: 'Подразделение',
-            weight: '18%'
+            weight: '18%',
+            field: 'management_name',
         },
         {
             title: 'Должность',
-            weight: '16%'
+            weight: '16%',
+            field: 'position_name',
         },
     ]
     return (
         <>
             <EmployeesTable
                 columns={columns}
-                employees={employees}
-                departments={departments}
-                managements={managements}
-                positions={positions}
+                employees={data.employees}
                 currentPage={currentPage}
-                totalPages={totalPages}
-                totals={totals}
+                totalPages={data.totalPages}
+                totals={data.totals}
             />
         </>
     )

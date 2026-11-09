@@ -50,4 +50,5 @@ export type HistoryType = {
 export type ColumnType = {
   title: string,
   weight: string,
+  field: string,
 }

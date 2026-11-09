@@ -1,21 +1,21 @@
+import { getEmployee } from "@/app/lib/actions"
+import EmployeeCard from "@/app/ui/employee_card/employee_card"
+
 export default async function EmployeePage({
     params,
 }: {
     params: Promise<{ id: number }>
 }) {
     const { id } = await params
-    const data = await fetch(`http://localhost:3000/api/employees/${id}`)
-    const employees = await data.json()
+    const result = await getEmployee(id)
 
-    let employee;
-    if (employees.length === 1) {
-        employee = employees[0];
+    if (result.error) {
+        return (<p className="text-sm text-red-600 font-medium mx-auto my-auto">{`Ошибка! ${result.error}`}</p>)
     }
 
     return (
-        <div className="flex flex-col items-center space-y-4 p-4 bg-white rounded-lg shadow">
-            <h1 className="text-3xl font-bold">{employee?.name}</h1>
-            <p className="text-gray-600">{employee?.position}</p>
-        </div>
+        <EmployeeCard
+            employee={result.employee}
+        />
     );
 }

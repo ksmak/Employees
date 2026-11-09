@@ -16,7 +16,7 @@ export default function EmployeesRows({
 
     return (
         <div className="flex-1 min-h-0 overflow-y-scroll bg-white [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent">
-            {employees.length > 0 ? (
+            {employees ? (
                 employees.map((employee: EmployeeType) => (
                     <EmployeesRow key={employee.id} employee={employee} colsWeight={colsWeight} />
                 ))
