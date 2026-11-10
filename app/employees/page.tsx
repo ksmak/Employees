@@ -18,7 +18,17 @@ interface EmployeesPageProps {
 
 export default async function EmployeesPage({ searchParams }: EmployeesPageProps) {
     //getting search params
-    const { surname, name, middlename, department, management, position, page, sort, sortField } = await searchParams
+    const {
+        surname,
+        name,
+        middlename,
+        department,
+        management,
+        position,
+        page,
+        sort,
+        sortField
+    } = await searchParams
     const currentPage = Number(page) || 1
     const data = await getEmployees({
         surname: surname || '',
@@ -56,12 +66,12 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
         {
             title: 'Управление',
             weight: '18%',
-            field: 'department_name',
+            field: 'management_name',
         },
         {
             title: 'Подразделение',
             weight: '18%',
-            field: 'management_name',
+            field: 'department_name',
         },
         {
             title: 'Должность',
@@ -73,10 +83,10 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
         <>
             <EmployeesTable
                 columns={columns}
-                employees={data.employees}
+                employees={data.employees || []}
                 currentPage={currentPage}
-                totalPages={data.totalPages}
-                totals={data.totals}
+                totalPages={data.totalPages || 1}
+                totals={data.totals || 0}
             />
         </>
     )

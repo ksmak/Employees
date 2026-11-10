@@ -2,13 +2,13 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useState, useEffect, useTransition } from 'react'
-import { ColumnType, DepartmentType, ManagementType, PositionType } from '@/app/lib/types'
+import { ColumnType, DictionaryType } from '@/app/lib/types'
 
 interface EmployeesFilterProps {
     columns: ColumnType[],
-    departments: DepartmentType[],
-    managements: ManagementType[],
-    positions: PositionType[],
+    departments: DictionaryType[],
+    managements: DictionaryType[],
+    positions: DictionaryType[],
 }
 
 export default function EmployeesFilter({
@@ -81,20 +81,20 @@ export default function EmployeesFilter({
                 />
                 <select
                     className="p-1 border border-gray-300 focus:outline-none"
-                    onChange={(e) => setDepartment(e.target.value)}
+                    onChange={(e) => setManagement(e.target.value)}
                 >
                     <option value=""></option>
-                    {departments.map((department: DepartmentType) => (
-                        <option key={department.id} value={department.id}>{department.name}</option>
+                    {managements.map((management: DictionaryType) => (
+                        <option key={management.id} value={management.id}>{management.name}</option>
                     ))}
                 </select>
                 <select
                     className="p-1 border border-gray-300 focus:outline-none"
-                    onChange={(e) => setManagement(e.target.value)}
+                    onChange={(e) => setDepartment(e.target.value)}
                 >
                     <option value=""></option>
-                    {managements.map((management: ManagementType) => (
-                        <option key={management.id} value={management.id}>{management.name}</option>
+                    {departments.map((department: DictionaryType) => (
+                        <option key={department.id} value={department.id}>{department.name}</option>
                     ))}
                 </select>
                 <select
@@ -102,7 +102,7 @@ export default function EmployeesFilter({
                     onChange={(e) => setPosition(e.target.value)}
                 >
                     <option value=""></option>
-                    {positions.map((position: PositionType) => (
+                    {positions.map((position: DictionaryType) => (
                         <option key={position.id} value={position.id}>{position.name}</option>
                     ))}
                 </select>

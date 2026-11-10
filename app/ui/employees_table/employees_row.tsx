@@ -21,8 +21,8 @@ export default function EmployeesRow({
       <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.surname}</div>
       <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.name}</div>
       <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.middlename}</div>
-      <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.department_name}</div>
       <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.management_name}</div>
+      <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.department_name}</div>
       <div className="overflow-hidden whitespace-nowrap text-ellipsis border border-gray-300 px-1">{employee.position_name}</div>
     </Link>
   );

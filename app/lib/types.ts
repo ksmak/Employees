@@ -1,19 +1,6 @@
-export type DepartmentType = {
+export type DictionaryType = {
   id: number;
   name: string;
-};
-
-export type ManagementType = {
-  id: number;
-  department_id: number;
-  name: string;
-};
-
-export type PositionType = {
-  id: number;
-  management_id: number;
-  name: string;
-  salary: number;
 };
 
 export type EmployeeType = {

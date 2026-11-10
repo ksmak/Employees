@@ -10,7 +10,11 @@ export default async function EmployeePage({
     const result = await getEmployee(id)
 
     if (result.error) {
-        return (<p className="text-sm text-red-600 font-medium mx-auto my-auto">{`Ошибка! ${result.error}`}</p>)
+        return (
+            <p className="text-sm text-red-600 font-medium mx-auto my-auto">
+                {`Ошибка! ${result.error}`}
+            </p>
+        )
     }
 
     return (

@@ -1,9 +1,9 @@
 'use client'
 
-import { DepartmentType, EmployeeType, ManagementType, PositionType } from '@/app/lib/types'
-import { useActionState, useState } from 'react'
+import { DictionaryType, EmployeeType } from '@/app/lib/types'
+import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createEmployee, deleteEmployee, FormState, updateEmployee } from '@/app/lib/actions'
+import { deleteEmployee, FormState, updateEmployee } from '@/app/lib/actions'
 import { useDictionaries } from '@/app/contexts/dictionaries'
 
 interface EmployeeCardProps {
@@ -22,11 +22,15 @@ export default function EmployeeCard({
     const [edit, setEdit] = useState(isNew)
     const [modal, setModal] = useState(false)
 
-    const initialState: FormState = {};
+    const initialState: FormState = { success: false };
 
-    const action = isNew ? createEmployee : updateEmployee;
+    const [state, action, pending] = useActionState(updateEmployee, initialState);
 
-    const [state, formAction, pending] = useActionState(action, initialState);
+    useEffect(() => {
+        if (state?.success) {
+            setEdit(false)
+        }
+    }, [state])
 
     const handlerCancel = () => {
         if (isNew) {
@@ -34,33 +38,15 @@ export default function EmployeeCard({
             return
         }
 
-        setValues(initialValues)
-
         setEdit(false)
     }
 
     const handlerDelete = async () => {
         if (employee?.id) {
             await deleteEmployee(employee.id)
+            router.push("/employees")
         }
     }
-
-    const initialValues = {
-        id: employee?.id ?? "",
-        name: employee?.name ?? "",
-        surname: employee?.surname ?? "",
-        middlename: employee?.middlename ?? "",
-        birthdate: employee?.birthdate ?? "",
-        gender: employee?.gender ?? "",
-        email: employee?.email ?? "",
-        phone: employee?.phone ?? "",
-        address: employee?.address ?? "",
-        department_id: employee?.department_id.toString() ?? "",
-        management_id: employee?.management_id.toString() ?? "",
-        position_id: employee?.position_id.toString() ?? "",
-    }
-
-    const [values, setValues] = useState(initialValues)
 
     if (isLoading) return <p>Загрузка справочников...</p>
 
@@ -111,12 +97,12 @@ export default function EmployeeCard({
                         Редактировать
                     </button>
                     <button
+                        className="border border-gray-300 bg-gray-200 hover:bg-gray-300 rounded-sm px-2 py-1 text-xs"
                         form="formEmployee"
                         type="submit"
-                        className="border border-gray-300 bg-gray-200 hover:bg-gray-300 rounded-sm px-2 py-1 text-xs"
                         hidden={!edit}
                     >
-                        {!isNew ? "Сохранить изменения" : "Создать сотрудника"}
+                        Сохранить
                     </button>
                     <button
                         className="border border-gray-300 bg-gray-200 hover:bg-gray-300 rounded-sm px-2 py-1 text-xs"
@@ -135,11 +121,11 @@ export default function EmployeeCard({
                 </div>
             </div>
             {/* form */}
-            <form action={formAction} className="p-1" id="formEmployee">
+            <form className="p-1" id="formEmployee" name="formEmployee" action={action}>
                 <input
                     type="hidden"
                     name="employeeId"
-                    value={values.id}
+                    defaultValue={employee?.id}
                 />
                 <fieldset className="text-xs w-full border border-gray-300 rounded-sm p-2">
                     <legend className="font-medium">
@@ -150,13 +136,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="surname">Фамилия</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.surname}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        surname: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.surname}
                                 type="text"
                                 id="surname"
                                 name="surname"
@@ -169,13 +149,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="name">Имя</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.name}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        name: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.name}
                                 type="text"
                                 id="name"
                                 name="name"
@@ -188,13 +162,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="middlename">Отчество</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.middlename}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        middlename: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.middlename}
                                 type="text"
                                 id="middlename"
                                 name="middlename"
@@ -206,13 +174,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="birthdate">Дата рождения</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.birthdate}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        birthdate: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.birthdate}
                                 type="date"
                                 id="birthdate"
                                 name="birthdate"
@@ -224,13 +186,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="gender">Пол</label>
                             <select
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.gender}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        gender: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.gender}
                                 id="gender"
                                 name="gender"
                                 disabled={!edit || pending}
@@ -252,13 +208,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="phone">Телефон</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.phone}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        phone: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.phone}
                                 type="text"
                                 id="phone"
                                 name="phone"
@@ -270,13 +220,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="address">Адрес</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.address}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        address: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.address}
                                 type="text"
                                 id="address"
                                 name="address"
@@ -288,13 +232,7 @@ export default function EmployeeCard({
                             <label className="ml-1" htmlFor="email">Email</label>
                             <input
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.email}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        email: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.email}
                                 type="text"
                                 id="email"
                                 name="email"
@@ -309,69 +247,51 @@ export default function EmployeeCard({
                     </legend>
                     <div className="grid grid-cols-3 gap-3">
                         <div className="flex flex-col gap-1">
-                            <label className="ml-1" htmlFor="department_id">Управление</label>
-                            <select
-                                className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.department_id}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        department_id: e.target.value,
-                                    }))
-                                }
-                                id="department_id"
-                                name="department_id"
-                                required
-                                disabled={!edit || pending}
-                            >
-                                <option value="">-</option>
-                                {data?.departments.map((department: DepartmentType) => (
-                                    <option key={department.id} value={String(department.id)}>{department.name}</option>
-                                ))}
-                            </select>
-                            <div className='ml-1 text-xs text-red-600'>{state?.errors?.department_id}</div>
-                        </div>
-                        <div className="flex flex-col gap-1">
                             <label className="ml-1" htmlFor="management_id">Подразделение</label>
                             <select
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.management_id}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        management_id: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.management_id}
                                 id="management_id"
                                 name="management_id"
                                 required
                                 disabled={!edit || pending}
                             >
                                 <option value="">-</option>
-                                {data?.managements.map((management: ManagementType) => (
+                                {data?.managements.map((management: DictionaryType) => (
                                     <option key={management.id} value={String(management.id)}>{management.name}</option>
                                 ))}
                             </select>
                             <div className='ml-1 text-xs text-red-600'>{state?.errors?.management_id}</div>
                         </div>
                         <div className="flex flex-col gap-1">
+                            <label className="ml-1" htmlFor="department_id">Управление</label>
+                            <select
+                                className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
+                                defaultValue={employee?.department_id}
+                                id="department_id"
+                                name="department_id"
+                                required
+                                disabled={!edit || pending}
+                            >
+                                <option value="">-</option>
+                                {data?.departments.map((department: DictionaryType) => (
+                                    <option key={department.id} value={String(department.id)}>{department.name}</option>
+                                ))}
+                            </select>
+                            <div className='ml-1 text-xs text-red-600'>{state?.errors?.department_id}</div>
+                        </div>
+                        <div className="flex flex-col gap-1">
                             <label className="ml-1" htmlFor="position_id">Должность</label>
                             <select
                                 className={`border border-gray-300 rounded-sm p-1 focus:outline-none ${edit && "text-blue-600"}`}
-                                value={values.position_id}
-                                onChange={e =>
-                                    setValues(prev => ({
-                                        ...prev,
-                                        position_id: e.target.value,
-                                    }))
-                                }
+                                defaultValue={employee?.position_id}
                                 id="position_id"
                                 name="position_id"
                                 required
                                 disabled={!edit || pending}
                             >
                                 <option value="">-</option>
-                                {data?.positions.map((position: PositionType) => (
+                                {data?.positions.map((position: DictionaryType) => (
                                     <option key={position.id} value={String(position.id)}>{position.name}</option>
                                 ))}
                             </select>

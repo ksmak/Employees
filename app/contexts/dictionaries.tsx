@@ -1,17 +1,13 @@
 'use client'
 
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-} from 'react'
-import { DepartmentType, ManagementType, PositionType } from '../lib/types'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { DictionaryType } from '@/app/lib/types'
+import { getDictionary } from '@/app/lib/actions'
 
 type Dictionaries = {
-    departments: DepartmentType[]
-    managements: ManagementType[]
-    positions: PositionType[]
+    departments: DictionaryType[]
+    managements: DictionaryType[]
+    positions: DictionaryType[]
 }
 
 type DictionaryContextType = {
@@ -36,31 +32,30 @@ export function DictionaryProvider({
             try {
                 const [departmentsRes, managementsRes, positionsRes] =
                     await Promise.all([
-                        fetch('/api/departments'),
-                        fetch('/api/managements'),
-                        fetch('/api/positions'),
+                        getDictionary('departments'),
+                        getDictionary('managements'),
+                        getDictionary('positions'),
                     ])
 
                 if (
-                    !departmentsRes.ok ||
-                    !managementsRes.ok ||
-                    !positionsRes.ok
+                    departmentsRes.error ||
+                    managementsRes.error ||
+                    positionsRes.error
                 ) {
                     throw new Error('Ошибка загрузки справочников')
                 }
 
-                const [departments, managements, positions] =
-                    await Promise.all([
-                        departmentsRes.json() as Promise<DepartmentType[]>,
-                        managementsRes.json() as Promise<ManagementType[]>,
-                        positionsRes.json() as Promise<PositionType[]>,
-                    ])
+                setData({
+                    departments: departmentsRes.dictionary || [],
+                    managements: managementsRes.dictionary || [],
+                    positions: positionsRes.dictionary || []
+                })
 
-                setData({ departments, managements, positions })
-            } catch (err) {
+            } catch (error) {
                 setError(
-                    err instanceof Error ? err.message : 'Неизвестная ошибка'
+                    error instanceof Error ? error.message : 'Неизвестная ошибка'
                 )
+
             } finally {
                 setIsLoading(false)
             }
